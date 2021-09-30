@@ -3,7 +3,9 @@
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://substrate.dev/docs/en/knowledgebase/runtime/frame>
-pub use pallet::*;
+pub use pallet_timestamp::pallet::*;
+
+mod types;
 
 #[cfg(test)]
 mod mock;
@@ -18,12 +20,15 @@ mod benchmarking;
 pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
+use uuid::Uuid;
+	use crate::types::{Peptide, PeptideProfile, AminoAcid};
 
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type CreateRoleOrigin: EnsureOrigin<Self::Origin>;
 	}
 
 	#[pallet::pallet]
@@ -33,10 +38,23 @@ pub mod pallet {
 	// The pallet's runtime storage items.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage
 	#[pallet::storage]
-	#[pallet::getter(fn something)]
+	#[pallet::getter(fn get_product)]
 	// Learn more about declaring storage items:
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
+	pub (super) type Peptides<T: Config> = StorageMap<_, Twox64Concat, u128, (Peptide<T::AccountId, T::Moment>, PeptideProfile), ValueQuery>;
+
+	#[pallet::storage]
+	pub type IdByCount<T> = StorageMap<_, Twox64Concat, u32, u128, ValueQuery>;
+	
+	#[pallet::storage]
+	pub type ProductCount<T> = StorageValue<_, u32, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn get_amino_acid)]
+	pub (super) type AminoAcids<T: Config> = StorageMap<_, Twox64Concat, u128, AminoAcid, ValueQuery>;
+
+	#[pallet::storage]
+	pub type AminoAcidCount<T> = StorageValue<_, u32>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/events
@@ -46,17 +64,22 @@ pub mod pallet {
 	pub enum Event<T: Config> {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
-		SomethingStored(u32, T::AccountId),
+		NewProduct(u128, u32, T::AccountId, T::Moment),
+		NewAminoAcid(u128, u32, T::AccountId),
 	}
 
 	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
 		/// Error names should be descriptive.
-		NoneValue,
+		InvalidProduct,
 		/// Errors should have helpful documentation associated with them.
-		StorageOverflow,
+		InvalidAmino,
+		InvalidProductProfile,
 	}
+
+	#[pallet::hooks]
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
 	// These functions materialize as "extrinsics", which are often compared to transactions.
@@ -66,38 +89,50 @@ pub mod pallet {
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
+		pub fn new_peptide(origin: OriginFor<T>, name: Vec<u8>, price: u32, inventory: u32, chain: Vec<u128>) -> DispatchResult {
 			// Check that the extrinsic was signed and get the signer.
 			// This function will return an error if the extrinsic is not signed.
 			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
 			let who = ensure_signed(origin)?;
+			let _who = who.clone();
+			let product_name = name.clone();
+			let _uuid = Uuid::new_v5(&Uuid::NAMESPACE_OID, &product_name).as_u128();
+			Peptides::<T>::insert(_uuid, (Peptide {
+				id: _uuid,
+				name,
+				price,
+				inventory,
+				created_by: who,
+				created_at: pallet_timestamp::Now::<T>::get(),
+			}, PeptideProfile {
+				product_ref: _uuid,
+				chain,
+				production_cost: 0,
+				production_yield: 0
+			}));
 
-			// Update storage.
-			<Something<T>>::put(something);
+			let mut count = ProductCount::<T>::get();
+			IdByCount::<T>::insert(count, _uuid);
+			count += 1;
 
 			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
+			Self::deposit_event(Event::NewProduct(_uuid.clone(), inventory.clone(), _who, pallet_timestamp::Now::<T>::get()));
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
 		}
 
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-			let _who = ensure_signed(origin)?;
-
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => Err(Error::<T>::NoneValue)?,
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-					Ok(())
-				},
-			}
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn new_amino(origin: OriginFor<T>, name: Vec<u8>, cost: u32) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			let _who = who.clone();
+			let _uuid = Uuid::new_v5(&Uuid::NAMESPACE_OID, &name).as_u128();
+			AminoAcids::<T>::insert(_uuid, AminoAcid {
+				id: _uuid,
+				name,
+				cost
+			});
+			Self::deposit_event(Event::NewAminoAcid(_uuid.clone(), cost.clone(), _who));
+			Ok(())
 		}
 	}
 }
