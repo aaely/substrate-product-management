@@ -3561,12 +3561,14 @@ dependencies = [
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
- "pallet-products",
+ "pallet-orders",
+ "pallet-peptides",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-users",
  "parity-scale-codec",
  "sp-api",
  "sp-block-builder",
@@ -3809,7 +3811,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-products"
+name = "pallet-orders"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "uuid",
+]
+
+[[package]]
+name = "pallet-peptides"
 version = "1.0.0"
 dependencies = [
  "frame-benchmarking",
@@ -3929,6 +3947,22 @@ dependencies = [
  "parity-scale-codec",
  "sp-api",
  "sp-runtime",
+]
+
+[[package]]
+name = "pallet-users"
+version = "1.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "uuid",
 ]
 
 [[package]]

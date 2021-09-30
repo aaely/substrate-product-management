@@ -219,6 +219,18 @@ std = [
 
 [dependencies.pallets-products]
 default-features = false
-package = 'pallet-products'
-path = '../pallets/products'
+package = 'pallet-peptides'
+path = '../pallets/peptides'
+version = '1.0.0'
+
+[dependencies.pallets-users]
+default-features = false
+package = 'pallet-users'
+path = '../pallets/users'
+version = '1.0.0'
+
+[dependencies.pallets-orders]
+default-features = false
+package = 'pallet-orders'
+path = '../pallets/orders'
 version = '1.0.0'
