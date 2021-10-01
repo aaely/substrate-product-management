@@ -3512,7 +3512,7 @@ dependencies = [
 
 [[package]]
 name = "node-template"
-version = "1.0.0"
+version = "3.0.0-monthly-2021-09+1"
 dependencies = [
  "frame-benchmarking",
  "frame-benchmarking-cli",
@@ -3817,6 +3817,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
+ "pallet-peptides",
  "pallet-timestamp",
  "parity-scale-codec",
  "sp-core",

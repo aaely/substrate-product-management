@@ -1,11 +1,8 @@
 [package]
-authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
-edition = '2018'
-homepage = 'https://substrate.dev'
-license = 'Unlicense'
+authors = ['Aaron Ely']
 name = 'node-template-runtime'
 publish = false
-repository = 'https://github.com/aaely/substrate-product-management/'
+repository = 'https://github.com/substrate-developer-hub/substrate-node-template/'
 version = '3.0.0-monthly-2021-09+1'
 
 [package.metadata.docs.rs]
@@ -201,6 +198,9 @@ std = [
     'pallet-grandpa/std',
     'pallet-randomness-collective-flip/std',
     'pallet-sudo/std',
+    'pallet-peptides/std',
+    'pallet-orders/std',
+    'pallet-users/std',
     'pallet-timestamp/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
     'pallet-transaction-payment/std',
@@ -217,19 +217,19 @@ std = [
     'sp-version/std',
 ]
 
-[dependencies.pallets-products]
+[dependencies.pallet-peptides]
 default-features = false
 package = 'pallet-peptides'
-path = '../pallets/peptides'
+path = '../pallets/peptides' 
 version = '1.0.0'
 
-[dependencies.pallets-users]
+[dependencies.pallet-users]
 default-features = false
 package = 'pallet-users'
 path = '../pallets/users'
 version = '1.0.0'
 
-[dependencies.pallets-orders]
+[dependencies.pallet-orders]
 default-features = false
 package = 'pallet-orders'
 path = '../pallets/orders'

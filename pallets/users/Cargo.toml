@@ -1,9 +1,5 @@
 [package]
 authors = ['Aaron Ely']
-description = 'FRAME pallet template for defining custom runtime logic.'
-edition = '2018'
-homepage = 'https://substrate.dev'
-license = 'Unlicense'
 name = 'pallet-users'
 publish = false
 readme = 'README.md'

@@ -1,12 +1,7 @@
 [package]
 authors = ['Aaron Ely']
-description = 'FRAME pallet template for defining custom runtime logic.'
-edition = '2018'
-homepage = 'https://substrate.dev'
-license = 'Unlicense'
 name = 'pallet-orders'
 publish = false
-readme = 'README.md'
 version = '1.0.0'
 
 [package.metadata.docs.rs]
@@ -71,6 +66,12 @@ git = 'https://github.com/paritytech/substrate.git'
 tag = 'monthly-2021-09+1'
 version = '4.0.0-dev'
 
+[dependencies.pallet-peptides]
+default-features = false
+package = 'pallet-peptides'
+version = '1.0.0'
+path = '../peptides'
+
 [features]
 default = ['std']
 runtime-benchmarks = ['frame-benchmarking']
@@ -81,5 +82,6 @@ std = [
     'frame-benchmarking/std',
     'sp-std/std',
     'pallet-timestamp/std',
+    'pallet-peptides/std',
 ]
 try-runtime = ['frame-support/try-runtime']
