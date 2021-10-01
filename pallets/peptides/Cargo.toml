@@ -2,7 +2,9 @@
 authors = ['Aaron Ely']
 name = 'pallet-peptides'
 publish = false
+git = 'https://github.com/aaely/substrate-product-management.git'
 version = '1.0.0'
+branch = 'master'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
