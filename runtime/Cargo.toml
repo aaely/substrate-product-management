@@ -198,6 +198,7 @@ std = [
     'pallet-grandpa/std',
     'pallet-randomness-collective-flip/std',
     'pallet-sudo/std',
+    'pallet-membership/std',
     'pallet-peptides/std',
     'pallet-orders/std',
     'pallet-users/std',
@@ -233,4 +234,10 @@ version = '1.0.0'
 default-features = false
 package = 'pallet-orders'
 path = '../pallets/orders'
+version = '1.0.0'
+
+[dependencies.pallet-membership]
+default-features = false
+package = 'pallet-membership'
+path = '../pallets/membership'
 version = '1.0.0'
